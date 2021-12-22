@@ -16,10 +16,10 @@ import java.util.StringTokenizer;
 
 public class Server implements Runnable {
 
-	static final File WEB_ROOT = new File(".");
-	static final String DEFAULT_FILE = "http_webserver/src/main/resources/index.html";
-	static final String FILE_NOT_FOUND = "http_webserver/src/main/resources/404.html";
-	static final String METHOD_NOT_SUPPORTED = "http_webserver/src/main/resources/not_supported.html";
+	static final File WEB_ROOT = new File("src/main/resources/");
+	static final String DEFAULT_FILE = "index.html";
+	static final String FILE_NOT_FOUND = "404.html";
+	static final String METHOD_NOT_SUPPORTED = "not_supported.html";
 	// port to listen connection
 	static final int PORT = 8080;
 
@@ -106,7 +106,8 @@ public class Server implements Runnable {
 				dataOut.flush();
 
 			} else {
-				// GET or HEAD method
+				// in casod termina con / significa che non è stato richiesto un file specifico
+				// ritorno il file di default index.html
 				if (fileRequested.endsWith("/")) {
 					fileRequested += DEFAULT_FILE;
 				}
