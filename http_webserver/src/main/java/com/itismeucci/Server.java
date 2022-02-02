@@ -16,10 +16,11 @@ import java.util.StringTokenizer;
 
 public class Server implements Runnable {
 
-	static final File WEB_ROOT = new File("src/main/resources/");
+	static final File WEB_ROOT = new File("http_webserver/src/main/resources/");
 	static final String DEFAULT_FILE = "index.html";
 	static final String FILE_NOT_FOUND = "404.html";
 	static final String METHOD_NOT_SUPPORTED = "not_supported.html";
+
 	// port to listen connection
 	static final int PORT = 8080;
 
@@ -110,6 +111,8 @@ public class Server implements Runnable {
 				// ritorno il file di default index.html
 				if (fileRequested.endsWith("/")) {
 					fileRequested += DEFAULT_FILE;
+				} else if (fileRequested.endsWith("/classe.json")) {
+					fileRequested += ;
 				}
 
 				File file = new File(WEB_ROOT, fileRequested);
