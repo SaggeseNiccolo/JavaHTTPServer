@@ -186,13 +186,17 @@ public class Server implements Runnable {
 		else if (fileRequested.endsWith(".css"))
 			return "text/css";
 		else if (fileRequested.endsWith(".js"))
-			return "application/x-javascript";
+			return "application/javascript";
 		else if (fileRequested.endsWith(".jpg") || fileRequested.endsWith(".jpeg"))
 			return "image/jpeg";
 		else if (fileRequested.endsWith(".png"))
 			return "image/png";
 		else if (fileRequested.endsWith(".gif"))
 			return "image/gif";
+		else if (fileRequested.endsWith(".xml"))
+			return "application/xml";
+		else if (fileRequested.endsWith(".json"))
+			return "application/json";
 		else
 			return "text/plain";
 	}
