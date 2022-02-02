@@ -13,11 +13,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
 import java.util.StringTokenizer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class Server implements Runnable {
 
 	static final File WEB_ROOT = new File("http_webserver/src/main/resources/");
 	static final String DEFAULT_FILE = "index.html";
+	static final String PUNTI_VENDITA_JSON = "puntiVendita.json";
+	static final String CLASSE_XML = "classe.xml";
 	static final String FILE_NOT_FOUND = "404.html";
 	static final String METHOD_NOT_SUPPORTED = "not_supported.html";
 
@@ -107,21 +111,37 @@ public class Server implements Runnable {
 				dataOut.flush();
 
 			} else {
+
+				byte[] fileData = null;
+				int fileLength = 0;
+
 				// in casod termina con / significa che non è stato richiesto un file specifico
 				// ritorno il file di default index.html
 				if (fileRequested.endsWith("/")) {
-					fileRequested += DEFAULT_FILE;
+					fileRequested = DEFAULT_FILE;
 				} else if (fileRequested.endsWith("/classe.json")) {
-					fileRequested += ;
+					// Deserializzazione xml to Root
+					File file = new File(CLASSE_XML);
+					XmlMapper xmlMapper = new XmlMapper();
+					Root value = xmlMapper.readValue(file, Root.class);
+
+					// Serializzazione Root to json
+					ObjectMapper json_mapper = new ObjectMapper();
+					String classe_jsonString = json_mapper.writerWithDefaultPrettyPrinter().writeValueAsString(value);
+
+					fileLength = classe_jsonString.length();
+					fileData = classe_jsonString.getBytes();
+
+				} else if (fileRequested.endsWith("/punti-vendita.xml")) {
+					fileRequested = PUNTI_VENDITA_JSON;
+				} else {
+					File file = new File(WEB_ROOT, fileRequested);
+					fileLength = (int) file.length();
 				}
 
-				File file = new File(WEB_ROOT, fileRequested);
-				int fileLength = (int) file.length();
 				String content = getContentType(fileRequested);
 
 				if (method.equals("GET")) { // GET method so we return content
-					byte[] fileData = readFileData(file, fileLength);
-
 					// send HTTP Headers
 					out.println("HTTP/1.1 200 OK");
 					out.println("Server: Java HTTP Server from SSaurel : 1.0");
@@ -141,7 +161,9 @@ public class Server implements Runnable {
 
 			}
 
-		} catch (FileNotFoundException fnfe) {
+		} catch (
+
+		FileNotFoundException fnfe) {
 			try {
 				fileNotFound(out, dataOut, fileRequested);
 			} catch (IOException ioe) {
