@@ -111,29 +111,34 @@ public class Server implements Runnable {
 				if (fileRequested.endsWith("/")) {
 					fileRequested = DEFAULT_FILE;
 				} else if (fileRequested.endsWith("/classe.json")) {
-					// // Deserializzazione xml to Root
-					// File file = new File(CLASSE_XML);
-					// XmlMapper xmlMapper = new XmlMapper();
-					// Root value = xmlMapper.readValue(file, Root.class);
 
-					// // Serializzazione Root to json
-					// ObjectMapper json_mapper = new ObjectMapper();
-					// String classe_jsonString = json_mapper.writeValueAsString(value);
+					XmlMapper xmlMapper = new XmlMapper();
+					ObjectMapper jsonMapper = new ObjectMapper();
 
-					XmlMapper mapper = new XmlMapper();
+					String file = new String(
+							Files.readAllBytes(Paths.get("http_webserver/src/main/resources/classe.xml")));
+					Root deserializedData = xmlMapper.readValue(file, Root.class);
 
-					String classe = new String(Files.readAllBytes(Paths.get("http_webserver/src/main/resources/classe.xml")));
-
-					Root deserializedData = mapper.readValue(classe, Root.class);
-
-					ObjectMapper objectMapper = new ObjectMapper();
-					String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(deserializedData);
+					String jsonString = jsonMapper.writerWithDefaultPrettyPrinter()
+							.writeValueAsString(deserializedData);
 
 					fileLength = jsonString.length();
 					fileData = jsonString.getBytes();
 
 				} else if (fileRequested.endsWith("/punti-vendita.xml")) {
-					fileRequested = PUNTI_VENDITA_JSON;
+
+					ObjectMapper jsonMapper = new ObjectMapper();
+					XmlMapper xmlMapper = new XmlMapper();
+
+					String file = new String(
+							Files.readAllBytes(Paths.get("http_webserver/src/main/resources/puntiVendita.json")));
+					PuntoVendita deserializedData = jsonMapper.readValue(file, PuntoVendita.class);
+
+					String xml = xmlMapper.writerWithDefaultPrettyPrinter().writeValueAsString(deserializedData);
+
+					fileLength = xml.length();
+					fileData = xml.getBytes();
+
 				} else {
 					File file = new File(WEB_ROOT, fileRequested);
 					fileLength = (int) file.length();
