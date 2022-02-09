@@ -1,18 +1,9 @@
 package com.itismeucci;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.Date;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.net.*;
+import java.nio.file.*;
+import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
@@ -120,23 +111,33 @@ public class Server implements Runnable {
 				if (fileRequested.endsWith("/")) {
 					fileRequested = DEFAULT_FILE;
 				} else if (fileRequested.endsWith("/classe.json")) {
-					// Deserializzazione xml to Root
-					File file = new File(CLASSE_XML);
-					XmlMapper xmlMapper = new XmlMapper();
-					Root value = xmlMapper.readValue(file, Root.class);
+					// // Deserializzazione xml to Root
+					// File file = new File(CLASSE_XML);
+					// XmlMapper xmlMapper = new XmlMapper();
+					// Root value = xmlMapper.readValue(file, Root.class);
 
-					// Serializzazione Root to json
-					ObjectMapper json_mapper = new ObjectMapper();
-					String classe_jsonString = json_mapper.writerWithDefaultPrettyPrinter().writeValueAsString(value);
+					// // Serializzazione Root to json
+					// ObjectMapper json_mapper = new ObjectMapper();
+					// String classe_jsonString = json_mapper.writeValueAsString(value);
 
-					fileLength = classe_jsonString.length();
-					fileData = classe_jsonString.getBytes();
+					XmlMapper mapper = new XmlMapper();
+
+					String classe = new String(Files.readAllBytes(Paths.get("http_webserver/src/main/resources/classe.xml")));
+
+					Root deserializedData = mapper.readValue(classe, Root.class);
+
+					ObjectMapper objectMapper = new ObjectMapper();
+					String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(deserializedData);
+
+					fileLength = jsonString.length();
+					fileData = jsonString.getBytes();
 
 				} else if (fileRequested.endsWith("/punti-vendita.xml")) {
 					fileRequested = PUNTI_VENDITA_JSON;
 				} else {
 					File file = new File(WEB_ROOT, fileRequested);
 					fileLength = (int) file.length();
+					fileData = readFileData(file, fileLength);
 				}
 
 				String content = getContentType(fileRequested);
