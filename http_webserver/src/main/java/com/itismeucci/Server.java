@@ -109,8 +109,12 @@ public class Server implements Runnable {
 				// in casod termina con / significa che non è stato richiesto un file specifico
 				// ritorno il file di default index.html
 				if (fileRequested.endsWith("/")) {
-					fileRequested = DEFAULT_FILE;
-				} else if (fileRequested.endsWith("/classe.json")) {
+
+					fileRequested += DEFAULT_FILE;
+
+				}
+
+				if (fileRequested.endsWith("/classe.json")) {
 
 					XmlMapper xmlMapper = new XmlMapper();
 					ObjectMapper jsonMapper = new ObjectMapper();
